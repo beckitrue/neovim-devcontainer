@@ -11,12 +11,6 @@ mkdir -p ~/.config/nvim/lua/config
 mkdir -p ~/.aws
 mkdir -p ~/.ssh
 
-# Copy base Neovim configuration if no config exists
-if [ ! -f ~/.config/nvim/init.lua ]; then
-    echo "📝 Setting up base Neovim configuration..."
-    cp -r .devcontainer/base-config/nvim/* ~/.config/nvim/
-fi
-
 # Apply user dotfiles if DOTFILES_REPO is set
 if [ -n "${DOTFILES_REPO}" ]; then
     echo "📦 Applying dotfiles from ${DOTFILES_REPO}..."
@@ -24,6 +18,15 @@ if [ -n "${DOTFILES_REPO}" ]; then
     # Clone dotfiles repository
     if [ ! -d ~/dotfiles ]; then
         git clone "${DOTFILES_REPO}" ~/dotfiles
+    fi
+
+    # Backup and remove base config if dotfiles will provide nvim config
+    if [ -d ~/dotfiles/nvim ]; then
+        echo "📝 Backing up base Neovim config..."
+        if [ -d ~/.config/nvim ]; then
+            rm -rf ~/.config/nvim.bak
+            mv ~/.config/nvim ~/.config/nvim.bak
+        fi
     fi
 
     # Run install command if specified
@@ -36,15 +39,21 @@ if [ -n "${DOTFILES_REPO}" ]; then
         else
             # If no install script, try using stow for common directories
             if command -v stow &> /dev/null; then
-                for dir in nvim tmux zsh git; do
+                for dir in nvim tmux zsh git starship; do
                     if [ -d "$dir" ]; then
-                        stow --target="$HOME" --restow "$dir"
+                        echo "Stowing $dir..."
+                        stow --target="$HOME/.config" --restow "$dir" || true
                     fi
                 done
             fi
         fi
         cd -
     fi
+else
+    # Only setup base config if no dotfiles provided
+    echo "📝 Setting up base Neovim configuration..."
+    mkdir -p ~/.config/nvim/lua/plugins
+    cp -r .devcontainer/base-config/nvim/* ~/.config/nvim/
 fi
 
 # Install Python dependencies if present
