@@ -46,10 +46,13 @@ RUN add-apt-repository ppa:deadsnakes/ppa \
 # Install Go
 RUN wget -q https://go.dev/dl/go1.21.5.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.21.5.linux-amd64.tar.gz \
-    && rm go1.21.5.linux-amd64.tar.gz
-ENV PATH="/usr/local/go/bin:${PATH}"
-ENV GOPATH="/home/vscode/go"
-ENV PATH="${GOPATH}/bin:${PATH}"
+    && rm go1.21.5.linux-amd64.tar.gz \
+    && ln -s /usr/local/go/bin/go /usr/local/bin/go \
+    && ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt
+
+# Set Go environment
+ENV GOPATH="/go"
+ENV PATH="/usr/local/go/bin:${GOPATH}/bin:${PATH}"
 
 # Install AWS CLI v2
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
@@ -74,9 +77,11 @@ RUN python3.11 -m pip install --upgrade pip \
     && python3.11 -m pip install virtualenv pipenv poetry black flake8 mypy
 
 # Go development tools
-RUN go install golang.org/x/tools/gopls@latest \
+RUN mkdir -p ${GOPATH}/bin \
+    && go install golang.org/x/tools/gopls@latest \
     && go install github.com/go-delve/delve/cmd/dlv@latest \
-    && go install golang.org/x/tools/cmd/goimports@latest
+    && go install golang.org/x/tools/cmd/goimports@latest \
+    && chmod -R 755 ${GOPATH}/bin
 
 # Clean up
 RUN apt-get autoremove -y \
@@ -97,6 +102,10 @@ RUN id -u $USERNAME 2>/dev/null || useradd --uid $USER_UID --gid $USER_GID -m $U
 
 USER $USERNAME
 WORKDIR /home/$USERNAME
+
+# Set user's Go environment
+ENV GOPATH="/home/$USERNAME/go"
+ENV PATH="/usr/local/go/bin:${GOPATH}/bin:/go/bin:${PATH}"
 
 # Pre-install lazy.nvim for the user
 RUN git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable \
