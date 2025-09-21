@@ -19,6 +19,11 @@ RUN apt-get clean && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Add GitHub CLI repository
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+
 # Add repositories and install packages (except Neovim)
 RUN add-apt-repository ppa:deadsnakes/ppa && \
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
@@ -40,6 +45,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa && \
     python3-pip \
     python3.11-dev \
     fuse \
+    gh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
