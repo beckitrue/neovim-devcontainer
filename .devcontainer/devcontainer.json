@@ -21,7 +21,7 @@
         "esbenp.prettier-vscode"
       ],
       "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.defaultProfile.linux": "zsh",
         "python.defaultInterpreterPath": "/usr/bin/python3.11"
       }
     }

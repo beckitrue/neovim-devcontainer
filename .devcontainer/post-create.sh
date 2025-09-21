@@ -33,9 +33,10 @@ if [ -n "${DOTFILES_REPO}" ]; then
     if [ -n "${DOTFILES_INSTALL_CMD}" ]; then
         cd ~/dotfiles
         if [ -f "${DOTFILES_INSTALL_CMD}" ]; then
-            bash "${DOTFILES_INSTALL_CMD}"
+            # Run install script but skip interactive parts
+            NONINTERACTIVE=1 bash "${DOTFILES_INSTALL_CMD}" || true
         elif [ -f "install.sh" ]; then
-            bash install.sh
+            NONINTERACTIVE=1 bash install.sh || true
         else
             # If no install script, try using stow for common directories
             if command -v stow &> /dev/null; then

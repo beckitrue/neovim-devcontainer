@@ -26,7 +26,8 @@ RUN apt-get -y install --no-install-recommends \
     jq \
     unzip \
     zip \
-    htop
+    htop \
+    zsh
 
 # Install PostgreSQL client
 RUN apt-get -y install --no-install-recommends postgresql-client
