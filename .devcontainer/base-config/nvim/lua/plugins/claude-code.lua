@@ -16,13 +16,23 @@ return {
 
       -- Keymaps
       keymaps = {
-        toggle = "<C-,>",  -- Toggle Claude Code terminal
-        continue = "<leader>cC",  -- Continue conversation
-        verbose = "<leader>cV",  -- Verbose mode
+        toggle = {
+          normal = "<C-,>",  -- Toggle Claude Code terminal in normal mode
+        },
+        continue = {
+          normal = "<leader>cC",  -- Continue conversation in normal mode
+        },
+        verbose = {
+          normal = "<leader>cV",  -- Verbose mode in normal mode
+        },
       },
 
       -- Shell configuration
-      shell = vim.o.shell,
+      shell = {
+        cmd = vim.o.shell,
+        args = { "-c" },
+        separator = ";",
+      },
 
       -- Command configuration
       command = "claude-code",
