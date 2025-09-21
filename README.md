@@ -228,7 +228,7 @@ Claude Code CLI is pre-installed in the container. The claude-code.nvim plugin i
 
 If claude-code isn't installed during build, install it manually:
 ```bash
-curl -fsSL https://claude.ai/install.sh | sh
+sudo npm install -g @anthropic-ai/claude-code
 ```
 
 #### Updates:

@@ -1,0 +1,37 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic packages
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    git \
+    python3 \
+    python3-pip \
+    nodejs \
+    npm \
+    sudo \
+    && npm install -g @anthropic-ai/claude-code \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Neovim from latest stable version
+RUN curl -fsSL --retry 3 "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz" -o /tmp/nvim-linux-x86_64.tar.gz && \
+    tar -C /usr/local --strip-components=1 -xzf /tmp/nvim-linux-x86_64.tar.gz && \
+    chmod +x /usr/local/bin/nvim && \
+    rm /tmp/nvim-linux-x86_64.tar.gz && \
+    nvim --version
+
+# Create non-root user
+RUN useradd -m -s /bin/bash vscode && \
+    echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER vscode
+WORKDIR /home/vscode
+
+# Install lazy.nvim
+RUN git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable \
+    ~/.local/share/nvim/lazy
+
+CMD ["/bin/bash"]

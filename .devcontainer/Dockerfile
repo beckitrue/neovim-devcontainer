@@ -1,8 +1,13 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
 
-# Install base development tools
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends \
+# Set non-interactive frontend for apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install base development tools with retry logic
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get update --fix-missing && \
+    apt-get -y install --no-install-recommends \
     build-essential \
     curl \
     git \
@@ -10,15 +15,15 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     software-properties-common \
     gnupg2 \
     lsb-release \
-    ca-certificates
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Neovim (latest stable)
-RUN add-apt-repository ppa:neovim-ppa/stable \
-    && apt-get update \
-    && apt-get -y install neovim
-
-# Install terminal tools
-RUN apt-get -y install --no-install-recommends \
+# Add repositories and install packages (except Neovim)
+RUN add-apt-repository ppa:deadsnakes/ppa && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get update && \
+    apt-get -y install --no-install-recommends \
     stow \
     ripgrep \
     fzf \
@@ -27,29 +32,36 @@ RUN apt-get -y install --no-install-recommends \
     unzip \
     zip \
     htop \
-    zsh
+    zsh \
+    postgresql-client \
+    nodejs \
+    python3.11 \
+    python3.11-venv \
+    python3-pip \
+    python3.11-dev \
+    fuse \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PostgreSQL client
-RUN apt-get -y install --no-install-recommends postgresql-client
+# Install latest Neovim from official releases
+RUN mkdir -p /opt && \
+    curl -fsSL --retry 3 https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz -o /tmp/nvim-linux-x86_64.tar.gz && \
+    tar -C /opt -xzf /tmp/nvim-linux-x86_64.tar.gz && \
+    chmod +x /opt/nvim-linux-x86_64/bin/nvim && \
+    ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim && \
+    rm /tmp/nvim-linux-x86_64.tar.gz && \
+    nvim --version
 
 # Install Starship prompt
 RUN curl -fsSL https://starship.rs/install.sh | sh -s -- --yes
-
-# Install Node.js (for TypeScript and Wrangler)
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs
-
-# Install Python 3.11 and pip
-RUN add-apt-repository ppa:deadsnakes/ppa \
-    && apt-get update \
-    && apt-get -y install python3.11 python3.11-venv python3-pip python3.11-dev
 
 # Install Node.js global packages
 RUN npm install -g \
     wrangler@latest \
     typescript \
     ts-node \
-    @types/node
+    @types/node \
+    @anthropic-ai/claude-code
 
 # Install Python tools and AWS CLI
 RUN python3.11 -m pip install --upgrade pip \
@@ -62,11 +74,7 @@ RUN python3.11 -m pip install --upgrade pip \
     flake8 \
     mypy
 
-# Install claude-code CLI
-RUN curl -fsSL https://claude.ai/install.sh | sh || \
-    (echo "Claude Code CLI installation failed. You can install it later with: curl -fsSL https://claude.ai/install.sh | sh" && \
-     echo '#!/bin/bash\necho "Claude Code CLI not installed. Run: curl -fsSL https://claude.ai/install.sh | sh"' > /usr/local/bin/claude-code && \
-     chmod +x /usr/local/bin/claude-code)
+# Claude Code CLI is installed via npm above
 
 # Clean up
 RUN apt-get autoremove -y \
