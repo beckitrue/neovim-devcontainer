@@ -34,10 +34,41 @@ A comprehensive development container featuring Neovim with lazy.nvim, claude-co
 
 ### Prerequisites
 - Docker Desktop or Docker Engine
-- Visual Studio Code with [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - Git
+- (Optional) Visual Studio Code with [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-### Basic Setup
+### Setup Options
+
+#### Option A: Using Docker Compose (Standalone - No VS Code Required)
+
+1. **Clone this repository:**
+   ```bash
+   git clone https://github.com/your-username/neovim-devcontainer.git
+   cd neovim-devcontainer
+   ```
+
+2. **Copy and configure environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings (dotfiles, AWS, etc.)
+   ```
+
+3. **Start the container:**
+   ```bash
+   # Build and run with docker-compose
+   docker-compose up -d
+   docker-compose exec neovim-dev bash
+
+   # Or run in one command
+   docker-compose run --rm neovim-dev
+   ```
+
+4. **Open Neovim:**
+   ```bash
+   nvim
+   ```
+
+#### Option B: Using VS Code Dev Containers
 
 1. **Clone this repository:**
    ```bash
@@ -47,7 +78,7 @@ A comprehensive development container featuring Neovim with lazy.nvim, claude-co
 
 2. **Copy and configure environment variables (optional):**
    ```bash
-   cp .devcontainer/.env.example .devcontainer/.env
+   cp .env.example .env
    # Edit .env with your settings
    ```
 
@@ -64,6 +95,31 @@ A comprehensive development container featuring Neovim with lazy.nvim, claude-co
 
 6. **Open Neovim:**
    ```bash
+   nvim
+   ```
+
+#### Option C: Using Plain Docker
+
+1. **Clone and build:**
+   ```bash
+   git clone https://github.com/your-username/neovim-devcontainer.git
+   cd neovim-devcontainer
+   docker build -t neovim-dev .devcontainer/
+   ```
+
+2. **Run the container:**
+   ```bash
+   docker run -it --rm \
+     -v $(pwd):/workspace \
+     -v /var/run/docker.sock:/var/run/docker.sock \
+     -w /workspace \
+     neovim-dev \
+     bash
+   ```
+
+3. **Inside the container, run setup and start Neovim:**
+   ```bash
+   bash .devcontainer/post-create.sh
    nvim
    ```
 
