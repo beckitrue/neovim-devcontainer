@@ -54,27 +54,29 @@ RUN wget -q https://go.dev/dl/go1.21.5.linux-amd64.tar.gz \
 ENV GOPATH="/go"
 ENV PATH="/usr/local/go/bin:${GOPATH}/bin:${PATH}"
 
-# Install AWS CLI v2
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
-    && ./aws/install \
-    && rm -rf awscliv2.zip aws
+# Install Node.js global packages
+RUN npm install -g \
+    wrangler@latest \
+    typescript \
+    ts-node \
+    @types/node
+
+# Install Python tools and AWS CLI
+RUN python3.11 -m pip install --upgrade pip \
+    && python3.11 -m pip install \
+    awscli \
+    virtualenv \
+    pipenv \
+    poetry \
+    black \
+    flake8 \
+    mypy
 
 # Install claude-code CLI (placeholder - update with actual release URL when available)
 # Note: Replace this with the actual claude-code CLI installation when available
 # RUN curl -fsSL https://github.com/anthropics/claude-code/releases/latest/download/claude-code-linux-x64 \
 #     -o /usr/local/bin/claude-code \
 #     && chmod +x /usr/local/bin/claude-code
-
-# Install Cloudflare Wrangler globally
-RUN npm install -g wrangler@latest
-
-# TypeScript support
-RUN npm install -g typescript ts-node @types/node
-
-# Python development tools
-RUN python3.11 -m pip install --upgrade pip \
-    && python3.11 -m pip install virtualenv pipenv poetry black flake8 mypy
 
 # Go development tools
 RUN mkdir -p ${GOPATH}/bin \
