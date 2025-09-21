@@ -62,11 +62,11 @@ RUN python3.11 -m pip install --upgrade pip \
     flake8 \
     mypy
 
-# Install claude-code CLI (placeholder - update with actual release URL when available)
-# Note: Replace this with the actual claude-code CLI installation when available
-# RUN curl -fsSL https://github.com/anthropics/claude-code/releases/latest/download/claude-code-linux-x64 \
-#     -o /usr/local/bin/claude-code \
-#     && chmod +x /usr/local/bin/claude-code
+# Install claude-code CLI
+RUN curl -fsSL https://claude.ai/install.sh | sh || \
+    (echo "Claude Code CLI installation failed. You can install it later with: curl -fsSL https://claude.ai/install.sh | sh" && \
+     echo '#!/bin/bash\necho "Claude Code CLI not installed. Run: curl -fsSL https://claude.ai/install.sh | sh"' > /usr/local/bin/claude-code && \
+     chmod +x /usr/local/bin/claude-code)
 
 # Clean up
 RUN apt-get autoremove -y \

@@ -4,9 +4,10 @@ A comprehensive development container featuring Neovim with lazy.nvim, claude-co
 
 ## Features
 
-### Editor
+### Editor & AI
 - **Neovim** (latest stable) with **lazy.nvim** package manager
-- **claude-code.nvim** - AI-powered coding assistant integration
+- **Claude Code CLI** - AI coding assistant that understands your codebase
+- **claude-code.nvim** - Neovim integration for Claude Code
 - Pre-configured with essential plugins (Telescope, Treesitter, LSP support)
 - Customizable through personal dotfiles
 
@@ -185,23 +186,57 @@ CLOUDFLARE_ACCOUNT_ID=your_account_id
 
 ### Claude Code Integration
 
-The claude-code.nvim plugin is pre-configured with default settings. To use it:
+Claude Code CLI is pre-installed in the container. The claude-code.nvim plugin is also pre-configured.
 
-1. **Install claude-code CLI** (when available):
+#### First-time Setup:
+
+1. **Verify installation:**
    ```bash
-   # Installation instructions will be provided when the CLI is released
+   claude-code --version
+   # Or check with:
+   claude doctor
    ```
 
-2. **Configure authentication** (if required):
+2. **Authenticate Claude Code:**
    ```bash
-   export CLAUDE_API_KEY=your_api_key
+   # You'll need either:
+   # - Active billing at console.anthropic.com
+   # - Or a Claude Pro/Max subscription
+
+   claude login
    ```
 
-3. **Use in Neovim:**
+3. **Use in Terminal:**
+   ```bash
+   # Ask Claude for help
+   claude "explain this codebase"
+
+   # Have Claude execute tasks
+   claude "fix the failing tests"
+
+   # Git workflow assistance
+   claude "create a PR for this feature"
+   ```
+
+4. **Use in Neovim:**
    - `Ctrl+,` - Toggle Claude Code terminal
    - `<leader>cc` - Open Claude Code
    - `<leader>ct` - Toggle Claude Code
    - `<leader>cs` - Send visual selection to Claude
+
+#### If Installation Fails:
+
+If claude-code isn't installed during build, install it manually:
+```bash
+curl -fsSL https://claude.ai/install.sh | sh
+```
+
+#### Updates:
+
+Claude Code automatically updates itself. To manually update:
+```bash
+claude update
+```
 
 ## Neovim Usage
 
