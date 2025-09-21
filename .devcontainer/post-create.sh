@@ -65,11 +65,8 @@ if [ -f "package.json" ]; then
     npm install
 fi
 
-# Install Go dependencies if present
-if [ -f "go.mod" ]; then
-    echo "🐹 Downloading Go modules..."
-    go mod download
-fi
+# Note: Go support has been removed to reduce image size
+# To add Go support, install it locally in the container
 
 # Configure Git if not already configured
 if [ -z "$(git config --global user.email)" ]; then
@@ -105,7 +102,7 @@ cat > ~/.devcontainer-info << EOF
 
 Installed Tools:
 - Neovim (with lazy.nvim)
-- Languages: Go, Python 3.11, Node.js/TypeScript
+- Languages: Python 3.11, Node.js/TypeScript
 - Cloud: AWS CLI, Cloudflare Wrangler
 - Database: PostgreSQL client
 - Terminal: tmux, ripgrep, fzf, starship
@@ -115,7 +112,6 @@ Quick Commands:
 - tmux: Start terminal multiplexer
 - aws: AWS CLI commands
 - wrangler: Cloudflare Workers CLI
-- go: Go commands
 - python3.11: Python interpreter
 - node/npm: Node.js runtime
 - psql: PostgreSQL client

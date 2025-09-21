@@ -1,0 +1,60 @@
+FROM mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+
+# Install essential tools only
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    curl \
+    git \
+    wget \
+    software-properties-common \
+    gnupg2 \
+    ca-certificates \
+    ripgrep \
+    fzf \
+    tmux \
+    jq \
+    unzip \
+    postgresql-client \
+    && add-apt-repository ppa:neovim-ppa/stable \
+    && apt-get update \
+    && apt-get -y install neovim \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js (for TypeScript and Wrangler) - smaller version
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python 3 (use system python to save space)
+RUN apt-get update \
+    && apt-get -y install python3 python3-pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install only essential global packages
+RUN npm install -g typescript wrangler@latest --no-save
+
+# Install only essential Python packages
+RUN python3 -m pip install --no-cache-dir awscli
+
+# Set up non-root user
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+USER $USERNAME
+WORKDIR /home/$USERNAME
+
+# Install lazy.nvim
+RUN git clone --filter=blob:none --depth=1 https://github.com/folke/lazy.nvim.git --branch=stable \
+    ~/.local/share/nvim/lazy

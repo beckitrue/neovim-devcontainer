@@ -11,7 +11,6 @@ A comprehensive development container featuring Neovim with lazy.nvim, claude-co
 - Customizable through personal dotfiles
 
 ### Languages & Runtimes
-- **Go** (1.21+) with gopls, delve debugger, and goimports
 - **Python** (3.11) with pip, virtualenv, pipenv, poetry, black, flake8, mypy
 - **Node.js** (LTS) with npm
 - **TypeScript** with ts-node and type definitions
@@ -250,20 +249,6 @@ poetry install
 poetry shell
 ```
 
-### Go Development
-```bash
-# Initialize module
-go mod init github.com/username/project
-
-# Download dependencies
-go mod download
-
-# Run tests
-go test ./...
-
-# Debug with delve
-dlv debug main.go
-```
 
 ### TypeScript/Node.js Development
 ```bash

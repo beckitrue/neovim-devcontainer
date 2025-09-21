@@ -16,18 +16,13 @@
       "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "golang.go",
         "ms-vscode.vscode-typescript-next",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode"
       ],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
-        "python.defaultInterpreterPath": "/usr/bin/python3.11",
-        "go.toolsManagement.checkForUpdates": "local",
-        "go.useLanguageServer": true,
-        "go.gopath": "/home/vscode/go",
-        "go.goroot": "/usr/local/go"
+        "python.defaultInterpreterPath": "/usr/bin/python3.11"
       }
     }
   },
@@ -51,8 +46,7 @@
 
   // Environment variables
   "remoteEnv": {
-    "GOPATH": "/home/vscode/go",
-    "PATH": "/home/vscode/go/bin:/usr/local/go/bin:${containerEnv:PATH}"
+    "PATH": "${containerEnv:PATH}"
   },
 
   // Dotfiles configuration - users can override in their VS Code settings
