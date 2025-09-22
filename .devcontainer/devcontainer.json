@@ -1,9 +1,8 @@
 {
   "name": "Neovim Full-Stack Development",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
-  },
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "neovim-dev",
+  "workspaceFolder": "/workspace",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest"
